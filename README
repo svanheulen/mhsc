@@ -1,0 +1,26 @@
+This plugin allows you to copy your Monster Hunter character to any
+save slot in any lanuage/region of the game. In other words, you can
+do things like copy your character from the North American version of
+Monster Hunter Freedom Unite to the Japanese version of Monster Hunter
+Portable 2nd G. The only requirement is that you must have both the
+game you want to copy from and the game you want to copy to.
+
+You can report issues, get the latest version, and view the source at
+    http://github.com/svanheulen/mhsc
+
+Manual Installation:
+    1. Copy mhsc.prx to your seplugins folder on your memory stick
+    2. Create a game.txt file in your seplugins folder, if one doesn't exist
+    3. Add a line to the game.txt file that reads "ms0:/seplugins/mhsc.prx 1"
+    4. Use your custom firmware's recovery menu to enable/disable the plugin
+
+Usage:
+    1. Load a character you want to copy and make sure you're in the main village area
+    2. Press the music/note button to bring up the display
+    3. Press the square button to save a copy of your character
+    4. Once the save is complete, press the O button to return to the game
+    5. Load a character to be replaced and make sure you're in the main village area
+    6. Press the music/note button to bring up the display
+    7. Press the X button to load the copy you made of your character
+    8. Once the load is complete, press the O button to return to the game
+    9. Use the normal in game save funtion to save the changes
