@@ -14,6 +14,17 @@ LIBDIR =
 LIBS = -lpspumd
 
 PSPSDK=$(shell psp-config --pspsdk-path)
+EXTRA_CLEAN=clean_release
 include $(PSPSDK)/lib/build_prx.mak
 
 LIBS += -lpspge
+
+release: all
+	mkdir -p release/seplugins
+	cp $(TARGET).prx release/seplugins
+	echo "ms0:/seplugins/mhsc.prx 1" > release/seplugins/game.txt
+	cp README release/readme.txt
+	cp COPYING release/license.txt
+
+clean_release:
+	rm -rf release
