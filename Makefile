@@ -22,7 +22,7 @@ LIBS += -lpspge
 release: all
 	mkdir -p release/seplugins/mhsc
 	cp $(TARGET).prx release/seplugins/mhsc
-	echo "ms0:/seplugins/mhsc.prx 1" > release/seplugins/game.txt
+	echo "ms0:/seplugins/mhsc/mhsc.prx 1" > release/seplugins/game.txt
 	cp README release/readme.txt
 	cp COPYING release/license.txt
 
