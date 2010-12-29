@@ -20,8 +20,8 @@ include $(PSPSDK)/lib/build_prx.mak
 LIBS += -lpspge
 
 release: all
-	mkdir -p release/seplugins
-	cp $(TARGET).prx release/seplugins
+	mkdir -p release/seplugins/mhsc
+	cp $(TARGET).prx release/seplugins/mhsc
 	echo "ms0:/seplugins/mhsc.prx 1" > release/seplugins/game.txt
 	cp README release/readme.txt
 	cp COPYING release/license.txt
