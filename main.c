@@ -197,7 +197,7 @@ int main_thread(SceSize argc, void* argp) {
         sceCtrlPeekBufferPositive(&pad, 1);
         if (pad.Buttons != 0) {
             if (paused) {
-                if (pad.Buttons & PSP_CTRL_CIRCLE) {
+                if (pad.Buttons & (PSP_CTRL_CIRCLE | PSP_CTRL_HOME)) {
                     // resume the game
                     if (control_module_threads(game_info.module_name, 1))
                         paused = 0;
