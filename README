@@ -1,5 +1,5 @@
 This plugin allows you to copy your Monster Hunter character to any
-save slot in any lanuage/region of the game. In other words, you can
+save slot in any language/region of the game. In other words, you can
 do things like copy your character from the North American version of
 Monster Hunter Freedom Unite to the Japanese version of Monster Hunter
 Portable 2nd G. The only requirement is that you must have both the
@@ -32,4 +32,5 @@ Usage:
     6. Press the music/note button to bring up the display
     7. Press the X button to load the copy you made of your character
     8. Once the load is complete, press the O button to return to the game
-    9. Use the normal in game save funtion to save the changes
+        Note: Your character's appearance will not change immediately after you load.
+    9. Use the normal in game save function to save the changes
