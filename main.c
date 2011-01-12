@@ -15,7 +15,7 @@
 PSP_MODULE_INFO("MonsterHunterSaveConverter", PSP_MODULE_KERNEL, 0, 1);
 PSP_NO_CREATE_MAIN_THREAD();
 
-struct game_info_t {
+typedef struct {
     // memory offset where the character data starts
     int offset;
     // name of the main module of the game
@@ -26,7 +26,7 @@ struct game_info_t {
     char file_name[50];
     // indicates if the file given in file_name exists
     int file_exists;
-};
+} game_info_t;
 
 int control_module_threads(char* module_name, int paused) {
     // find the game's module id
@@ -54,7 +54,7 @@ int control_module_threads(char* module_name, int paused) {
             continue;
         module_info = sceKernelFindModuleByAddress((unsigned int) thread_info.entry);
         if (module_info && module_info->modid == module_id) {
-            // pause or resume the game's threads
+            // pause or resume the thread
             if (paused)
                 sceKernelResumeThread(thread_id[i]);
             else
@@ -64,8 +64,8 @@ int control_module_threads(char* module_name, int paused) {
     return 1;
 }
 
-int check_game(struct game_info_t* game_info) {
-    // actiave the umd
+int check_game(game_info_t* game_info) {
+    // activate the umd
     sceUmdCheckMedium();
     sceUmdActivate(1, "disc0:");
     sceUmdWaitDriveStat(UMD_WAITFORINIT);
@@ -115,7 +115,7 @@ int check_game(struct game_info_t* game_info) {
     return 1;
 }
 
-int save(struct game_info_t* game_info) {
+int save(game_info_t* game_info) {
     // open or create the save file
     SceUID file = sceIoOpen(game_info->file_name, PSP_O_WRONLY | PSP_O_CREAT | PSP_O_TRUNC, 0777);
     if (file < 0)
@@ -132,7 +132,7 @@ int save(struct game_info_t* game_info) {
     return 1;
 }
 
-int load(struct game_info_t* game_info) {
+int load(game_info_t* game_info) {
     // open an existing save file
     SceUID file = sceIoOpen(game_info->file_name, PSP_O_RDONLY, 0777);
     if (file < 0)
@@ -147,7 +147,7 @@ int load(struct game_info_t* game_info) {
     return 1;
 }
 
-int delete(struct game_info_t* game_info) {
+int delete(game_info_t* game_info) {
     // delete an existing save file
     if (sceIoRemove(game_info->file_name) < 0)
         return 0;
@@ -156,7 +156,7 @@ int delete(struct game_info_t* game_info) {
     return 1;
 }
 
-void display_message(struct game_info_t* game_info, const char* message, unsigned int color) {
+void display_message(game_info_t* game_info, const char* message, unsigned int color) {
     // print some info and controls to the screen
     pspDebugScreenSetTextColor(0x00ffffff);
     pspDebugScreenSetXY(0, 0);
@@ -167,6 +167,7 @@ void display_message(struct game_info_t* game_info, const char* message, unsigne
     pspDebugScreenKprintf(game_info->file_name);
     pspDebugScreenSetXY(0, 3);
     pspDebugScreenKprintf("o = exit, square = save");
+    // print load and delete controls only if the save file exists
     if (game_info->file_exists)
         pspDebugScreenKprintf(", x = load, triangle = delete");
     else
@@ -177,7 +178,7 @@ void display_message(struct game_info_t* game_info, const char* message, unsigne
 }
 
 int main_thread(SceSize argc, void* argp) {
-    struct game_info_t game_info;
+    game_info_t game_info;
     // get the path that the plugin was loaded from
     int path_length = strrchr((char*) argp, '/') - (char*) argp + 1;
     strncpy(game_info.file_name, argp, path_length);
@@ -197,6 +198,8 @@ int main_thread(SceSize argc, void* argp) {
         sceCtrlPeekBufferPositive(&pad, 1);
         if (pad.Buttons != 0) {
             if (paused) {
+                // exiting to xmb while the game is paused will cause the psp to hang
+                // so resuming when the home button is pressed works around that
                 if (pad.Buttons & (PSP_CTRL_CIRCLE | PSP_CTRL_HOME)) {
                     // resume the game
                     if (control_module_threads(game_info.module_name, 1))
