@@ -1,9 +1,11 @@
 /*
 
-  Copyright (c) 2010, Seth VanHeulen
-  All rights reserved.
+Copyright (c) 2010-2011, Seth VanHeulen
+All rights reserved.
 
- */
+This code is released under the BSD license.
+
+*/
 
 #include <pspkernel.h>
 #include <pspdebug.h>
