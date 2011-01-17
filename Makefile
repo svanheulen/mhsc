@@ -23,8 +23,8 @@ release: all
 	mkdir -p release/seplugins/mhsc
 	cp $(TARGET).prx release/seplugins/mhsc
 	echo "ms0:/seplugins/mhsc/mhsc.prx 1" > release/seplugins/game.txt
-	cp README release/readme.txt
-	cp COPYING release/license.txt
+	sed -e 's/$/\r/' < README > release/readme.txt
+	sed -e 's/$/\r/' < LICENSE > release/license.txt
 
 clean_release:
 	rm -rf release
