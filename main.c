@@ -207,31 +207,31 @@ int main_thread(SceSize argc, void* argp) {
                     if (control_module_threads(game_info.module_name, 1))
                         paused = 0;
                     else
-                        display_message(&game_info, "resume failed.  ", 0x000000ff);
+                        display_message(&game_info, "resume failed.  ", 0xff);
                 }
                 if (pad.Buttons & PSP_CTRL_SQUARE) {
                     // save character
-                    display_message(&game_info, "saving...       ", 0x00ff0000);
+                    display_message(&game_info, "saving...       ", 0xff0000);
                     if (save(&game_info))
-                        display_message(&game_info, "save complete.  ", 0x0000ff00);
+                        display_message(&game_info, "save complete.  ", 0xff00);
                     else
-                        display_message(&game_info, "save failed.    ", 0x000000ff);
+                        display_message(&game_info, "save failed.    ", 0xff);
                 }
                 if (pad.Buttons & PSP_CTRL_CROSS && game_info.file_exists) {
                     // load character
-                    display_message(&game_info, "loading...      ", 0x00ff0000);
+                    display_message(&game_info, "loading...      ", 0xff0000);
                     if (load(&game_info))
-                        display_message(&game_info, "load complete.  ", 0x0000ff00);
+                        display_message(&game_info, "load complete.  ", 0xff00);
                     else
-                        display_message(&game_info, "load failed.    ", 0x000000ff);
+                        display_message(&game_info, "load failed.    ", 0xff);
                 }
                 if (pad.Buttons & PSP_CTRL_TRIANGLE && game_info.file_exists) {
                     // delete save file
-                    display_message(&game_info, "deleting...     ", 0x00ff0000);
+                    display_message(&game_info, "deleting...     ", 0xff0000);
                     if (delete(&game_info))
-                        display_message(&game_info, "delete complete.", 0x0000ff00);
+                        display_message(&game_info, "delete complete.", 0xff00);
                     else
-                        display_message(&game_info, "delete failed.  ", 0x000000ff);
+                        display_message(&game_info, "delete failed.  ", 0xff);
                 }
             } else {
                 if (pad.Buttons & PSP_CTRL_NOTE) {
@@ -239,7 +239,7 @@ int main_thread(SceSize argc, void* argp) {
                     if (control_module_threads(game_info.module_name, 0)) {
                         paused = 1;
                         pspDebugScreenInit();
-                        display_message(&game_info, "", 0x00ffffff);
+                        display_message(&game_info, "", 0);
                     }
                 }
             }
