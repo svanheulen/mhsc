@@ -9,28 +9,36 @@ You can report issues, get the latest version, and view the source at
     http://github.com/svanheulen/mhsc
 
 Supported Games:
-    Monster Hunter Portable 2nd G (JP) (ULJM-05500)
-    Monster Hunter Freedom Unite (EU) (ULES-01213)
-    Monster Hunter Freedom Unite (NA) (ULUS-10391)
+  Monster Hunter Portable (JP) (ULJM-05066)
+  Monster Hunter Freedom (EU) (ULES-00318)
+  Monster Hunter Freedom (NA) (ULUS-10084)
+  Monster Hunter Portable 2nd (JP) (ULJM-05156)
+  Monster Hunter Freedom 2 (EU) (ULES-00851)
+  Monster Hunter Freedom 2 (NA) (ULUS-10266)
+  Monster Hunter Portable 2nd G (JP) (ULJM-05500)
+  Monster Hunter Freedom Unite (EU) (ULES-01213)
+  Monster Hunter Freedom Unite (NA) (ULUS-10391)
+  Monster Hunter Portable 3rd (JP) (ULJM-05800)
 
 Easy Installation (disables all other game plugins):
-    1. Copy the seplugins folder onto the root of your memory stick, replacing files
+  1. Copy the seplugins folder onto the root of your memory stick, replacing files
 
 Manual Installation:
-    1. Create a mhsc folder in your seplugins folder on your memory stick
-    2. Copy mhsc.prx to this new folder
-    3. Create a game.txt file in your seplugins folder, if one doesn't exist
-    4. Add a line to the game.txt file that reads "ms0:/seplugins/mhsc.prx 0"
-    5. Use your custom firmware's recovery menu to enable/disable the plugin
+  1. Create a mhsc folder in your seplugins folder on your memory stick
+  2. Copy mhsc.prx to this new folder
+  3. Create a game.txt file in your seplugins folder, if one doesn't exist
+  4. Add a line to the game.txt file that reads "ms0:/seplugins/mhsc/mhsc.prx 0"
+  5. Use your custom firmware's recovery menu to enable/disable the plugin
 
 Usage:
-    1. Load a character you want to copy and make sure you're in the main village area
-    2. Press the music/note button to bring up the display
-    3. Press the square button to save a copy of your character
-    4. Once the save is complete, press the O button to return to the game
-    5. Load a character to be replaced and make sure you're in the main village area
-    6. Press the music/note button to bring up the display
-    7. Press the X button to load the copy you made of your character
-    8. Once the load is complete, press the O button to return to the game
-        Note: Your character's appearance will not change immediately after you load.
-    9. Use the normal in game save function to save the changes
+  1. Load a character you want to copy and make sure you're in the main village area
+  2. Press the music/note button to bring up the display
+  3. Press the square button to save a copy of your character
+  4. Once the save is complete, press the circle button to return to the game
+  5. Load a character to be replaced and make sure you're in the main village area
+  6. Press the music/note button to bring up the display
+  7. Press the cross button to load the copy you made of your character
+  8. Once the load is complete, press the circle button to return to the game
+     Note: Your character's appearance will not change until you go on a quest,
+           enter the training area or change you equipment.
+  9. Use the normal in game save function to save the changes
