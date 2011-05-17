@@ -83,12 +83,26 @@ int check_game(game_info_t* game_info) {
     sceIoClose(umd_data);
     game_id[10] = 0;
     // set the correct offset for each game id
-    if (strcmp("ULJM-05500", game_id) == 0)
-        game_info->offset = 0x1195e30;
+    if (strcmp("ULJM-05066", game_id) == 0)
+        game_info->offset = 0x10532a8;
+    else if (strcmp("ULES-00318", game_id) == 0)
+        game_info->offset = 0x10548a8;
+    else if (strcmp("ULUS-10084", game_id) == 0)
+        game_info->offset = 0x1053b28;
+    else if (strcmp("ULJM-05156", game_id) == 0)
+        game_info->offset = 0x10c2e54;
+    else if (strcmp("ULES-00851", game_id) == 0)
+        game_info->offset = 0x10c4b54;
+    else if (strcmp("ULUS-10266", game_id) == 0)
+        game_info->offset = 0x10c3854;
+    else if (strcmp("ULJM-05500", game_id) == 0)
+        game_info->offset = 0x1195e40;
     else if (strcmp("ULES-01213", game_id) == 0)
-        game_info->offset = 0x119a0f0;
+        game_info->offset = 0x119a100;
     else if (strcmp("ULUS-10391", game_id) == 0)
-        game_info->offset = 0x119a230;
+        game_info->offset = 0x119a240;
+    else if (strcmp("ULJM-05800", game_id) == 0)
+        game_info->offset = 0x13491fc;
     else
         return 0;
     // read the game's module name from the umd
@@ -102,9 +116,18 @@ int check_game(game_info_t* game_info) {
     }
     sceIoClose(eboot);
     // set the correct size and file name for each module name
-    if (strcmp("MonsterHunterPortable2ndG", game_info->module_name) == 0) {
-        game_info->size = 0x6a880;
+    if (strcmp("MonsterHunterPSP", game_info->module_name) == 0) {
+        game_info->size = 0x46a0;
+        strcat(game_info->file_name, "mhp.bin");
+    } else if (strcmp("MonsterHunterPortable2nd", game_info->module_name) == 0) {
+        game_info->size = 0x13ef4;
+        strcat(game_info->file_name, "mhp2.bin");
+    } else if (strcmp("MonsterHunterPortable2ndG", game_info->module_name) == 0) {
+        game_info->size = 0x6a938;
         strcat(game_info->file_name, "mhp2g.bin");
+    } else if (strcmp("MonsterHunterPortable3rd", game_info->module_name) == 0) {
+        game_info->size = 0x5f378;
+        strcat(game_info->file_name, "mhp3.bin");
     } else {
         return 0;
     }
@@ -160,7 +183,7 @@ int delete(game_info_t* game_info) {
 
 void display_message(game_info_t* game_info, const char* message, unsigned int color) {
     // print some info and controls to the screen
-    pspDebugScreenSetTextColor(0x00ffffff);
+    pspDebugScreenSetTextColor(0xffffff);
     pspDebugScreenSetXY(0, 0);
     pspDebugScreenKprintf("game: ");
     pspDebugScreenKprintf(game_info->module_name);
