@@ -8,10 +8,7 @@ This code is released under the BSD license.
 */
 
 #include <pspkernel.h>
-#include <pspdebug.h>
-#include <pspumd.h>
 #include <pspctrl.h>
-#include <pspthreadman_kernel.h>
 #include <string.h>
 
 PSP_MODULE_INFO("MonsterHunterSaveConverter", PSP_MODULE_KERNEL, 0, 3);
@@ -19,25 +16,20 @@ PSP_NO_CREATE_MAIN_THREAD();
 
 typedef struct {
     // memory offset where the character data starts
-    int offset;
-    // name of the main module of the game
-    char module_name[28];
+    char* character;
     // length of the character data in memory
-    int size;
+    unsigned int size;
+    // module id of the main module of the game
+    SceUID module_id;
+    // name of the main module of the game
+    char game_name[28];
     // name of the file to save/load character data to/from
     char file_name[50];
     // indicates if the file given in file_name exists
     int file_exists;
 } game_info_t;
 
-int control_module_threads(char* module_name, int paused) {
-    // find the game's module id
-    SceUID module_id;
-    SceModule* module_info = sceKernelFindModuleByName(module_name);
-    if (module_info)
-        module_id = module_info->modid;
-    else
-        return 0;
+int control_module_threads(SceUID module_id, int pause) {
     // get an array of all threads
     int thread_count;
     if (sceKernelGetThreadmanIdList(SCE_KERNEL_TMID_Thread, NULL, 0, &thread_count) < 0)
@@ -48,64 +40,69 @@ int control_module_threads(char* module_name, int paused) {
     if (sceKernelGetThreadmanIdList(SCE_KERNEL_TMID_Thread, thread_id, thread_count, NULL) < 0)
         return 0;
     int i;
+    SceModule* module;
     SceKernelThreadInfo thread_info;
     thread_info.size = sizeof(SceKernelThreadInfo);
     for (i = 0; i < thread_count; i++) {
         // determine if a thread is from the game
         if (sceKernelReferThreadStatus(thread_id[i], &thread_info))
             continue;
-        module_info = sceKernelFindModuleByAddress((unsigned int) thread_info.entry);
-        if (module_info && module_info->modid == module_id) {
+        module = sceKernelFindModuleByAddress((unsigned int) thread_info.entry);
+        if (module && module->modid == module_id) {
             // pause or resume the thread
-            if (paused)
-                sceKernelResumeThread(thread_id[i]);
-            else
+            if (pause)
                 sceKernelSuspendThread(thread_id[i]);
+            else
+                sceKernelResumeThread(thread_id[i]);
         }
     }
     return 1;
 }
 
 int check_game(game_info_t* game_info) {
-    // activate the umd
-    sceUmdCheckMedium();
-    sceUmdActivate(1, "disc0:");
-    sceUmdWaitDriveStat(UMD_WAITFORINIT);
-    // read the game's module name from the umd
-    SceUID eboot = sceIoOpen("disc0:/PSP_GAME/SYSDIR/EBOOT.BIN", PSP_O_RDONLY, 0777);
-    if (eboot < 0)
-        return 0;
-    sceIoLseek32(eboot, 10, PSP_SEEK_SET);
-    if (sceIoRead(eboot, game_info->module_name, 28) < 28) {
-        sceIoClose(eboot);
-        return 0;
-    }
-    sceIoClose(eboot);
     // get the game's module info
-    sceKernelDelayThread(3000000);
-    SceModule* module_info = sceKernelFindModuleByName(game_info->module_name);
-    if (module_info == NULL)
-        return 0;
-    // set the correct size and file name for each module name
-    if (strcmp("MonsterHunterPSP", game_info->module_name) == 0) {
-        game_info->offset = *((int *) (module_info->text_addr - 0x6e60)) + 648;
+    SceModule* module = NULL;
+    while (module == NULL) {
+        sceKernelDelayThread(1000000);
+        module = sceKernelFindModuleByAddress(0x08804000);
+    }
+    // set the module id and game name
+    game_info->module_id = module->modid;
+    strcpy(game_info->game_name, module->modname);
+    // get the game's global pointer
+    // NOTE: the SceModule structure is incorrect, text_addr is actually the gp_value
+    unsigned int module_gp = module->text_addr;
+    // add the offset to the global pointer, add the offset to the character pointer,
+    // set the size and file name based on the game name
+    if (strcmp("MonsterHunterPSP", game_info->game_name) == 0) {
+        module_gp -= 0x6e60;
+        game_info->character = (char *) 648;
         game_info->size = 0x46a0;
         strcat(game_info->file_name, "mhp.bin");
-    } else if (strcmp("MonsterHunterPortable2nd", game_info->module_name) == 0) {
-        game_info->offset = *((int *) (module_info->text_addr - 0x7e5c)) + 1060;
+    } else if (strcmp("MonsterHunterPortable2nd", game_info->game_name) == 0) {
+        module_gp -= 0x7e5c;
+        game_info->character = (char *) 1060;
         game_info->size = 0x13ef4;
         strcat(game_info->file_name, "mhp2.bin");
-    } else if (strcmp("MonsterHunterPortable2ndG", game_info->module_name) == 0) {
-        game_info->offset = *((int *) (module_info->text_addr - 0x7648)) + 1184;
+    } else if (strcmp("MonsterHunterPortable2ndG", game_info->game_name) == 0) {
+        module_gp -= 0x7648;
+        game_info->character = (char *) 1184;
         game_info->size = 0x6a938;
         strcat(game_info->file_name, "mhp2g.bin");
-    } else if (strcmp("MonsterHunterPortable3rd", game_info->module_name) == 0) {
-        game_info->offset = *((int *) (module_info->text_addr + 0x88fc0)) + 2140;
+    } else if (strcmp("MonsterHunterPortable3rd", game_info->game_name) == 0) {
+        module_gp += 0x88fc0;
+        game_info->character = (char *) 2140;
         game_info->size = 0x5f378;
         strcat(game_info->file_name, "mhp3.bin");
     } else {
         return 0;
     }
+    // wait for the global pointer to be filled
+    while (*((unsigned int *) module_gp) == 0) {
+        sceKernelDelayThread(1000000);
+    }
+    // set the character pointer
+    game_info->character += *((unsigned int *) module_gp);
     // check if a save file already exists
     SceIoStat stat;
     if (sceIoGetstat(game_info->file_name, &stat) < 0)
@@ -121,8 +118,7 @@ int save(game_info_t* game_info) {
     if (file < 0)
         return 0;
     // read character data from memory and write it into the save file
-    char* mem_pointer = (char*) game_info->offset;
-    if (sceIoWrite(file, mem_pointer, game_info->size) < game_info->size) {
+    if (sceIoWrite(file, game_info->character, game_info->size) < game_info->size) {
         sceIoClose(file);
         return 0;
     }
@@ -138,8 +134,7 @@ int load(game_info_t* game_info) {
     if (file < 0)
         return 0;
     // read character data from the save file and write it to memory
-    char* mem_pointer = (char*) game_info->offset;
-    if (sceIoRead(file, mem_pointer, game_info->size) < game_info->size) {
+    if (sceIoRead(file, game_info->character, game_info->size) < game_info->size) {
         sceIoClose(file);
         return 0;
     }
@@ -161,7 +156,7 @@ void display_message(game_info_t* game_info, const char* message, unsigned int c
     pspDebugScreenSetTextColor(0xffffff);
     pspDebugScreenSetXY(0, 0);
     pspDebugScreenKprintf("game: ");
-    pspDebugScreenKprintf(game_info->module_name);
+    pspDebugScreenKprintf(game_info->game_name);
     pspDebugScreenSetXY(0, 1);
     pspDebugScreenKprintf("save file: ");
     pspDebugScreenKprintf(game_info->file_name);
@@ -202,7 +197,7 @@ int main_thread(SceSize argc, void* argp) {
                 // so resuming when the home button is pressed works around that
                 if (pad.Buttons & (PSP_CTRL_CIRCLE | PSP_CTRL_HOME)) {
                     // resume the game
-                    if (control_module_threads(game_info.module_name, 1))
+                    if (control_module_threads(game_info.module_id, 0))
                         paused = 0;
                     else
                         display_message(&game_info, "resume failed.  ", 0xff);
@@ -234,7 +229,7 @@ int main_thread(SceSize argc, void* argp) {
             } else {
                 if (pad.Buttons & PSP_CTRL_NOTE) {
                     // pause the game
-                    if (control_module_threads(game_info.module_name, 0)) {
+                    if (control_module_threads(game_info.module_id, 1)) {
                         paused = 1;
                         pspDebugScreenInit();
                         display_message(&game_info, "", 0);
