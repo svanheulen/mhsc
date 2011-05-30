@@ -14,7 +14,7 @@ This code is released under the BSD license.
 #include <pspthreadman_kernel.h>
 #include <string.h>
 
-PSP_MODULE_INFO("MonsterHunterSaveConverter", PSP_MODULE_KERNEL, 0, 1);
+PSP_MODULE_INFO("MonsterHunterSaveConverter", PSP_MODULE_KERNEL, 0, 3);
 PSP_NO_CREATE_MAIN_THREAD();
 
 typedef struct {
@@ -71,40 +71,6 @@ int check_game(game_info_t* game_info) {
     sceUmdCheckMedium();
     sceUmdActivate(1, "disc0:");
     sceUmdWaitDriveStat(UMD_WAITFORINIT);
-    // read the game's id from the umd
-    SceUID umd_data = sceIoOpen("disc0:/UMD_DATA.BIN", PSP_O_RDONLY, 0777);
-    if (umd_data < 0)
-        return 0;
-    char game_id[11];
-    if (sceIoRead(umd_data, game_id, 10) < 10) {
-        sceIoClose(umd_data);
-        return 0;
-    }
-    sceIoClose(umd_data);
-    game_id[10] = 0;
-    // set the correct offset for each game id
-    if (strcmp("ULJM-05066", game_id) == 0)
-        game_info->offset = 0x10532a8;
-    else if (strcmp("ULES-00318", game_id) == 0)
-        game_info->offset = 0x10548a8;
-    else if (strcmp("ULUS-10084", game_id) == 0)
-        game_info->offset = 0x1053b28;
-    else if (strcmp("ULJM-05156", game_id) == 0)
-        game_info->offset = 0x10c2e54;
-    else if (strcmp("ULES-00851", game_id) == 0)
-        game_info->offset = 0x10c4b54;
-    else if (strcmp("ULUS-10266", game_id) == 0)
-        game_info->offset = 0x10c3854;
-    else if (strcmp("ULJM-05500", game_id) == 0)
-        game_info->offset = 0x1195e40;
-    else if (strcmp("ULES-01213", game_id) == 0)
-        game_info->offset = 0x119a100;
-    else if (strcmp("ULUS-10391", game_id) == 0)
-        game_info->offset = 0x119a240;
-    else if (strcmp("ULJM-05800", game_id) == 0)
-        game_info->offset = 0x13491fc;
-    else
-        return 0;
     // read the game's module name from the umd
     SceUID eboot = sceIoOpen("disc0:/PSP_GAME/SYSDIR/EBOOT.BIN", PSP_O_RDONLY, 0777);
     if (eboot < 0)
@@ -115,17 +81,26 @@ int check_game(game_info_t* game_info) {
         return 0;
     }
     sceIoClose(eboot);
+    // get the game's module info
+    sceKernelDelayThread(3000000);
+    SceModule* module_info = sceKernelFindModuleByName(game_info->module_name);
+    if (module_info == NULL)
+        return 0;
     // set the correct size and file name for each module name
     if (strcmp("MonsterHunterPSP", game_info->module_name) == 0) {
+        game_info->offset = *((int *) (module_info->text_addr - 0x6e60)) + 648;
         game_info->size = 0x46a0;
         strcat(game_info->file_name, "mhp.bin");
     } else if (strcmp("MonsterHunterPortable2nd", game_info->module_name) == 0) {
+        game_info->offset = *((int *) (module_info->text_addr - 0x7e5c)) + 1060;
         game_info->size = 0x13ef4;
         strcat(game_info->file_name, "mhp2.bin");
     } else if (strcmp("MonsterHunterPortable2ndG", game_info->module_name) == 0) {
+        game_info->offset = *((int *) (module_info->text_addr - 0x7648)) + 1184;
         game_info->size = 0x6a938;
         strcat(game_info->file_name, "mhp2g.bin");
     } else if (strcmp("MonsterHunterPortable3rd", game_info->module_name) == 0) {
+        game_info->offset = *((int *) (module_info->text_addr + 0x88fc0)) + 2140;
         game_info->size = 0x5f378;
         strcat(game_info->file_name, "mhp3.bin");
     } else {
@@ -146,7 +121,7 @@ int save(game_info_t* game_info) {
     if (file < 0)
         return 0;
     // read character data from memory and write it into the save file
-    char* mem_pointer = (char*) (0x8800000 + game_info->offset);
+    char* mem_pointer = (char*) game_info->offset;
     if (sceIoWrite(file, mem_pointer, game_info->size) < game_info->size) {
         sceIoClose(file);
         return 0;
@@ -163,7 +138,7 @@ int load(game_info_t* game_info) {
     if (file < 0)
         return 0;
     // read character data from the save file and write it to memory
-    char* mem_pointer = (char*) (0x8800000 + game_info->offset);
+    char* mem_pointer = (char*) game_info->offset;
     if (sceIoRead(file, mem_pointer, game_info->size) < game_info->size) {
         sceIoClose(file);
         return 0;
