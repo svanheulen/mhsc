@@ -8,7 +8,7 @@ game you want to copy from and the game you want to copy to.
 You can report issues, get the latest version, and view the source at
     http://github.com/svanheulen/mhsc
 
-Supported Games:
+Known Supported Games:
   Monster Hunter Portable (JP) (ULJM-05066)
   Monster Hunter Freedom (EU) (ULES-00318)
   Monster Hunter Freedom (NA) (ULUS-10084)
@@ -19,6 +19,12 @@ Supported Games:
   Monster Hunter Freedom Unite (EU) (ULES-01213)
   Monster Hunter Freedom Unite (NA) (ULUS-10391)
   Monster Hunter Portable 3rd (JP) (ULJM-05800)
+
+Theoretically Supported Games:
+  All variants of Monster Hunter Portable
+  All variants of Monster Hunter Portable 2nd
+  All variants of Monster Hunter Portable 2nd G
+  All (including not yet released) variants of Monster Hunter Portable 3rd
 
 Easy Installation (disables all other game plugins):
   1. Copy the seplugins folder onto the root of your memory stick, replacing files

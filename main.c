@@ -15,7 +15,7 @@ PSP_MODULE_INFO("MonsterHunterSaveConverter", PSP_MODULE_KERNEL, 0, 3);
 PSP_NO_CREATE_MAIN_THREAD();
 
 typedef struct {
-    // memory offset where the character data starts
+    // pointer to the character data
     char* character;
     // length of the character data in memory
     unsigned int size;
@@ -98,9 +98,8 @@ int check_game(game_info_t* game_info) {
         return 0;
     }
     // wait for the global pointer to be filled
-    while (*((unsigned int *) module_gp) == 0) {
+    while (*((unsigned int *) module_gp) == 0)
         sceKernelDelayThread(1000000);
-    }
     // set the character pointer
     game_info->character += *((unsigned int *) module_gp);
     // check if a save file already exists
