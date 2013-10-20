@@ -1,3 +1,7 @@
+NOTE: The mhef project makes this plugin obsolete. With it you can convert
+save files directly on your computer without a PSP and without CFW:
+  http://github.com/svanheulen/mhef
+
 This plugin allows you to copy your Monster Hunter character to any
 save slot in any language/region of the game. In other words, you can
 do things like copy your character from the North American version of
@@ -7,8 +11,6 @@ game you want to copy from and the game you want to copy to.
 
 You can report issues, get the latest version, and view the source at:
   http://github.com/svanheulen/mhsc
-
-Bitcoin donations are accepted at: 1FiViad5t8ESJ6FUxosffXzvRPH86b1TUi
 
 Known Supported Games:
   Monster Hunter Portable (JP) (ULJM-05066)
@@ -48,5 +50,5 @@ Usage:
   7. Press the cross button to load the copy you made of your character
   8. Once the load is complete, press the circle button to return to the game
      Note: Your character's appearance will not change until you go on a quest,
-           enter the training area or change you equipment.
+           enter the training area or change your equipment.
   9. Use the normal in game save function to save the changes
